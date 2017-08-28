@@ -1,0 +1,4 @@
+suites:
+    inventory_suite:
+        namespace: Webgriffe\LibTriveneto
+        psr4_prefix: Webgriffe\LibTriveneto
