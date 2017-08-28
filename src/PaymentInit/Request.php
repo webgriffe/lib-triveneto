@@ -8,7 +8,194 @@
 
 namespace Webgriffe\LibTriveneto\PaymentInit;
 
-class Request
-{
+use Webgriffe\LibTriveneto\SignableInterface;
 
+class Request implements SignableInterface
+{
+    private $id;
+    
+    private $password;
+    
+    private $action;
+    
+    private $amt;
+    
+    private $currencycode;
+    
+    private $langid;
+    
+    private $responseURL;
+    
+    private $errorUrl;
+    
+    private $trackid;
+    
+    private $udf1;
+
+    /**
+     * @param mixed $id
+     * @return $this
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+        $this->udf1 = null;
+        return $this;
+    }
+
+    /**
+     * @param mixed $password
+     * @return $this
+     */
+    public function setPassword($password)
+    {
+        $this->password = $password;
+        $this->udf1 = null;
+        return $this;
+    }
+
+    /**
+     * @param mixed $action
+     * @return $this
+     */
+    public function setAction($action)
+    {
+        $this->action = $action;
+        $this->udf1 = null;
+        return $this;
+    }
+
+    /**
+     * @param mixed $amt
+     * @return $this
+     */
+    public function setAmt($amt)
+    {
+        $this->amt = number_format($amt, 2, '.', '');
+        $this->udf1 = null;
+        return $this;
+    }
+
+    /**
+     * @param mixed $currencycode
+     * @return $this
+     */
+    public function setCurrencycode($currencycode)
+    {
+        $this->currencycode = $currencycode;
+        $this->udf1 = null;
+        return $this;
+    }
+
+    /**
+     * @param mixed $langid
+     * @return $this
+     */
+    public function setLangid($langid)
+    {
+        $this->langid = $langid;
+        $this->udf1 = null;
+        return $this;
+    }
+
+    /**
+     * @param mixed $responseURL
+     * @return $this
+     */
+    public function setResponseURL($responseURL)
+    {
+        $this->responseURL = $responseURL;
+        $this->udf1 = null;
+        return $this;
+    }
+
+    /**
+     * @param mixed $errorUrl
+     * @return $this
+     */
+    public function setErrorUrl($errorUrl)
+    {
+        $this->errorUrl = $errorUrl;
+        $this->udf1 = null;
+        return $this;
+    }
+
+    /**
+     * @param mixed $trackid
+     * @return $this
+     */
+    public function setTrackid($trackid)
+    {
+        $this->trackid = $trackid;
+        $this->udf1 = null;
+        return $this;
+    }
+
+    /**
+     * @return string
+     * @throws \Exception
+     */
+    public function getSignatureData()
+    {
+        if (!$this->isAllDataSet()) {
+            throw new \Exception('All values are required before signing request');
+        }
+
+        return $this->id.
+            $this->password.
+            $this->action.
+            $this->amt.
+            $this->currencycode.
+            $this->langid.
+            $this->responseURL.
+            $this->errorUrl.
+            $this->trackid;
+    }
+
+    /**
+     * @param $signature
+     * @return $this
+     */
+    public function setSignature($signature)
+    {
+        $this->udf1 = $signature;
+        return $this;
+    }
+
+    /**
+     * @return string
+     * @throws \Exception
+     */
+    public function generateQueryString()
+    {
+        if (!$this->isAllDataSet()) {
+            throw new \Exception("All values are required before generating query string");
+        } elseif (!$this->udf1) {
+            throw new \Exception("Signature must be calculated before generating query string");
+        }
+
+        $params = array(
+            'id'            => $this->id,
+            'password'      => $this->password,
+            'action'        => $this->action,
+            'amt'           => $this->amt,
+            'currencycode'  => $this->currencycode,
+            'langid'        => $this->langid,
+            'responseURL'   => $this->responseURL,
+            'errorURL'      => $this->errorUrl,
+            'trackid'       => $this->trackid,
+            'udf1'          => $this->udf1,
+        );
+
+        return http_build_query($params);
+    }
+
+    /**
+     * @return bool
+     */
+    private function isAllDataSet()
+    {
+        return $this->id && $this->password && $this->action && $this->amt && $this->currencycode && $this->langid &&
+            $this->responseURL && $this->errorUrl && $this->trackid;
+    }
 }

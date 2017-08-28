@@ -41,6 +41,10 @@ class Client
 
     public function init($userId, $password, $initUrl, $action)
     {
+        if (!extension_loaded('curl')) {
+            throw new \Exception('This library needs PHP cURL to work');
+        }
+
         if (!$userId) {
             throw new \InvalidArgumentException('Missing user id');
         }
