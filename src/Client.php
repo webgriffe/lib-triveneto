@@ -3,6 +3,9 @@
 namespace Webgriffe\LibTriveneto;
 
 use Psr\Log\LoggerInterface;
+use Webgriffe\LibTriveneto\Lists\Actions;
+use Webgriffe\LibTriveneto\Lists\Currencies;
+use Webgriffe\LibTriveneto\Lists\Languages;
 
 class Client
 {
@@ -52,6 +55,8 @@ class Client
 
         if (!$action) {
             throw new \InvalidArgumentException('Missing payment action (accounting type)');
+        } elseif (!$this->isValidPaymentAction($action)) {
+            throw new \InvalidArgumentException('Invalid payment action specified: '.$action);
         }
 
         $this->userId = $userId;
@@ -60,10 +65,35 @@ class Client
         $this->action = $action;
     }
 
-    public function paymentInit()
+    public function paymentInit($transactionId, $amount, $currencyCode, $languageId, $successUrl, $errorUrl)
     {
         if (!$this->wasInitCalled()) {
             throw new \Exception('Init was not called');
+        }
+
+        if (!$transactionId) {
+            throw new \InvalidArgumentException('No transaction id provided');
+        }
+
+        //Only accept positive numbers with at most 2 decimal places
+        if (!$amount || !is_numeric($amount) || $amount <= 0 || round($amount, 2) != $amount) {
+            throw new \InvalidArgumentException('Invalid amount');
+        }
+
+        if (!$currencyCode || !$this->isValidCurrencyCode($currencyCode)) {
+            throw new \InvalidArgumentException('Invalid currency');
+        }
+
+        if (!$languageId || !$this->isValidLanguageId($languageId)) {
+            throw new \InvalidArgumentException('Invalid language');
+        }
+
+        if (!$successUrl) {
+            throw new \InvalidArgumentException('Missing success URL');
+        }
+
+        if (!$errorUrl) {
+            throw new \InvalidArgumentException('Missing error URL');
         }
     }
 
@@ -78,5 +108,23 @@ class Client
     {
         return !is_null($this->userId) && !is_null($this->password) && !is_null($this->initUrl) &&
             !is_null($this->action);
+    }
+
+    private function isValidPaymentAction($action)
+    {
+        $actionsList = new Actions();
+        return in_array($action, $actionsList->getList());
+    }
+
+    private function isValidCurrencyCode($currencyCode)
+    {
+        $currencyList = new Currencies();
+        return in_array($currencyCode, $currencyList->getList());
+    }
+
+    private function isValidLanguageId($languageId)
+    {
+        $languagesList = new Languages();
+        return in_array($languageId, $languagesList->getList());
     }
 }
