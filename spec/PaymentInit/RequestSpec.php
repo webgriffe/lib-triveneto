@@ -13,7 +13,7 @@ class RequestSpec extends ObjectBehavior
 
     public function it_is_signable()
     {
-        $this->shouldHaveType('Webgriffe\LibTriveneto\SignableInterface');
+        $this->shouldHaveType('Webgriffe\LibTriveneto\Signature\Signable');
     }
 
     public function it_must_be_filled_before_being_signed()

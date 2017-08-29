@@ -8,9 +8,9 @@
 
 namespace Webgriffe\LibTriveneto\PaymentInit;
 
-use Webgriffe\LibTriveneto\SignableInterface;
+use Webgriffe\LibTriveneto\Signature\Signable;
 
-class Request implements SignableInterface
+class Request implements Signable
 {
     private $id;
     

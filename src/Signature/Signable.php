@@ -1,8 +1,8 @@
 <?php
 
-namespace Webgriffe\LibTriveneto;
+namespace Webgriffe\LibTriveneto\Signature;
 
-interface SignableInterface
+interface Signable
 {
     /**
      * @return string
