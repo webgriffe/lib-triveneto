@@ -46,6 +46,21 @@ class RequestSpec extends ObjectBehavior
         $this->shouldThrow(new \Exception("All values are required before signing request"))->duringGetSignatureData();
     }
 
+    public function it_generates_a_signable_string()
+    {
+        $this->setId('1');
+        $this->setPassword('pwd');
+        $this->setAction(1);
+        $this->setAmt(100);
+        $this->setCurrencycode(978);
+        $this->setLangid('ITA');
+        $this->setResponseURL('http://response.com');
+        $this->setErrorUrl('http://error.com');
+        $this->setTrackid('100001');
+
+        $this->getSignatureData()->shouldBe('1pwd1100.00978ITAhttp://response.comhttp://error.com100001');
+    }
+
     public function it_must_be_filled_before_generating_the_query_string()
     {
         $this->setId('1');
@@ -96,7 +111,7 @@ class RequestSpec extends ObjectBehavior
         );
     }
 
-    public function it_deletes_the_signature_when_changing_some_data()
+    public function it_resets_the_signature_when_changing_some_data()
     {
         $this->setId('1');
         $this->setPassword('pwd');

@@ -1,2 +1,4 @@
 [28-Aug-2017 17:49:33 Europe/Rome] PHP Fatal error:  Cannot redeclare spec\Webgriffe\LibTriveneto\PaymentInit\RequestSpec::it_must_be_filled_before_being_signed() in /var/www/lib-triveneto/spec/PaymentInit/RequestSpec.php on line 34
 [28-Aug-2017 17:49:35 Europe/Rome] PHP Fatal error:  Cannot redeclare spec\Webgriffe\LibTriveneto\PaymentInit\RequestSpec::it_must_be_filled_before_being_signed() in /var/www/lib-triveneto/spec/PaymentInit/RequestSpec.php on line 34
+[29-Aug-2017 14:12:33 Europe/Rome] XDebug could not open the remote debug file '/var/log/xdebug.log'.
+[29-Aug-2017 14:15:32 Europe/Rome] XDebug could not open the remote debug file '/var/log/xdebug.log'.
