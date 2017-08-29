@@ -6,6 +6,10 @@ use Psr\Log\LoggerInterface;
 use Webgriffe\LibTriveneto\Lists\Actions;
 use Webgriffe\LibTriveneto\Lists\Currencies;
 use Webgriffe\LibTriveneto\Lists\Languages;
+use Webgriffe\LibTriveneto\PaymentInit\Request;
+use Webgriffe\LibTriveneto\PaymentInit\RequestSender;
+use Webgriffe\LibTriveneto\Signature\Sha1SignatureCalculator;
+use Webgriffe\LibTriveneto\Signature\Signer;
 
 class Client
 {
@@ -13,6 +17,11 @@ class Client
      * @var LoggerInterface
      */
     private $logger = null;
+
+    /**
+     * @var RequestSender
+     */
+    private $sender = null;
 
     /**
      * @var string
@@ -34,14 +43,15 @@ class Client
      */
     private $action = null;
 
-    public function __construct(LoggerInterface $logger)
+    public function __construct(LoggerInterface $logger, RequestSender $sender)
     {
         $this->logger = $logger;
+        $this->sender = $sender;
     }
 
     public function init($userId, $password, $initUrl, $action)
     {
-        if (!extension_loaded('curl')) {
+        if (!extension_loaded('curl') || !function_exists('curl_init')) {
             throw new \Exception('This library needs PHP cURL to work');
         }
 
@@ -69,13 +79,25 @@ class Client
         $this->action = $action;
     }
 
-    public function paymentInit($transactionId, $amount, $currencyCode, $languageId, $successUrl, $errorUrl)
+    /**
+     * @param string $merchantTransactionId Identifier of the payment for the merchant. Usually this is the order id
+     * @param float $amount Payment amount
+     * @param string $currencyCode Code that identifies the payment currency. Currently only 978 (Euro) is supported
+     * @param string $languageId Code of the payment page language
+     * @param string $successUrl URL to redirect the customer to after a succesful payment
+     * @param string $errorUrl URL to redirect the customer to after a failed payment
+     *
+     * @return string The URL to redirect the customer to in order to perform the payment
+     *
+     * @throws \Exception
+     */
+    public function paymentInit($merchantTransactionId, $amount, $currencyCode, $languageId, $successUrl, $errorUrl)
     {
         if (!$this->wasInitCalled()) {
             throw new \Exception('Init was not called');
         }
 
-        if (!$transactionId) {
+        if (!$merchantTransactionId) {
             throw new \InvalidArgumentException('No transaction id provided');
         }
 
@@ -99,6 +121,34 @@ class Client
         if (!$errorUrl) {
             throw new \InvalidArgumentException('Missing error URL');
         }
+
+        $request = new Request();
+        $request->setId($this->userId);
+        $request->setPassword($this->password);
+        $request->setAction($this->action);
+        $request->setAmt($amount);
+        $request->setCurrencycode($currencyCode);
+        $request->setLangid($languageId);
+        $request->setResponseURL($successUrl);
+        $request->setErrorUrl($errorUrl);
+        $request->setTrackid($merchantTransactionId);
+
+        $this->getSigner()->sign($request);
+
+        $queryString = $request->generateQueryString();
+
+        $response = $this->sender->post($this->initUrl, $queryString);
+
+        if (strpos($response, '!ERROR!') === 0) {
+            $errorMessage = substr($response, 7);
+            throw new \Exception($errorMessage);
+        }
+
+        $pos = strpos($response, ':http');
+        $paymentId = substr($response, 0, $pos);
+        $paymentUrl = substr($response, $pos + 1);
+
+        return "{$paymentUrl}?PaymentID={$paymentId}";
     }
 
     public function paymentVerify()
@@ -130,5 +180,13 @@ class Client
     {
         $languagesList = new Languages();
         return in_array($languageId, $languagesList->getList());
+    }
+
+    /**
+     * @return Signer
+     */
+    private function getSigner()
+    {
+        return new Sha1SignatureCalculator();
     }
 }
