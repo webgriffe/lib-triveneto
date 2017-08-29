@@ -43,13 +43,18 @@ class Client
      */
     private $action = null;
 
+    /**
+     * @var string
+     */
+    private $signSecret;
+
     public function __construct(LoggerInterface $logger, RequestSender $sender)
     {
         $this->logger = $logger;
         $this->sender = $sender;
     }
 
-    public function init($userId, $password, $initUrl, $action)
+    public function init($userId, $password, $initUrl, $action, $signSecret)
     {
         if (!extension_loaded('curl') || !function_exists('curl_init')) {
             throw new \Exception('This library needs PHP cURL to work');
@@ -73,10 +78,15 @@ class Client
             throw new \InvalidArgumentException('Invalid payment action specified: '.$action);
         }
 
+        if (!$signSecret || strlen($signSecret) < 8) {
+            throw new \InvalidArgumentException('Sign secret must be at least 8 chars long');
+        }
+
         $this->userId = $userId;
         $this->password = $password;
         $this->initUrl = $initUrl;
         $this->action = $action;
+        $this->signSecret = $signSecret;
     }
 
     /**
@@ -151,11 +161,28 @@ class Client
         return "{$paymentUrl}?PaymentID={$paymentId}";
     }
 
-    public function paymentVerify()
+    public function paymentVerify(array $requestParams)
     {
         if (!$this->wasInitCalled()) {
             throw new \Exception('Init was not called');
         }
+
+        array_change_key_case($requestParams, CASE_LOWER);
+
+        if (array_key_exists('error', $requestParams)) {
+            $errorCode = $requestParams['error'];
+            $errorDesc = $requestParams['errortext'];
+
+            throw new \Exception("{$errorCode}: {$errorDesc}");
+        }
+
+        $paymentid = $requestParams['paymentid'];
+        $tranid = $requestParams['tranid'];
+        $result = $requestParams['result'];
+        $auth = $requestParams['auth'];
+        $postdate = $requestParams['postdate'];
+        $trackid = $requestParams['trackid'];
+        $udf1 = $requestParams['udf1'];
     }
 
     private function wasInitCalled()
@@ -187,6 +214,6 @@ class Client
      */
     private function getSigner()
     {
-        return new Sha1SignatureCalculator();
+        return new Sha1SignatureCalculator($this->signSecret);
     }
 }

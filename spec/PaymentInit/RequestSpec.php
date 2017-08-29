@@ -58,7 +58,7 @@ class RequestSpec extends ObjectBehavior
         $this->setErrorUrl('http://error.com');
         $this->setTrackid('100001');
 
-        $this->getSignatureData()->shouldBe('1pwd1100.00978ITAhttp://response.comhttp://error.com100001');
+        $this->getSignatureData()->shouldBe('1pwd1100.00978ITA100001');
     }
 
     public function it_must_be_filled_before_generating_the_query_string()
@@ -107,7 +107,7 @@ class RequestSpec extends ObjectBehavior
 
         $this->generateQueryString()->shouldBe(
             'id=1&password=pwd&action=1&amt=100.00&currencycode=978&langid=ITA&responseURL=http%3A%2F%2Fresponse.com&'.
-            'errorURL=http%3A%2F%2Ferror.com&trackid=100001&udf1=signature'
+            'errorURL=http%3A%2F%2Ferror.com&trackid=100001&udf1=1pwd1100.00978ITA100001%7Csignature'
         );
     }
 

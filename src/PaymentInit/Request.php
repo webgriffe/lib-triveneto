@@ -147,8 +147,8 @@ class Request implements Signable
             $this->amt.
             $this->currencycode.
             $this->langid.
-            $this->responseURL.
-            $this->errorUrl.
+            //$this->responseURL.   These are too long to add them to the udf1 field
+            //$this->errorUrl.
             $this->trackid;
     }
 
@@ -158,7 +158,7 @@ class Request implements Signable
      */
     public function setSignature($signature)
     {
-        $this->udf1 = $signature;
+        $this->udf1 = $this->getSignatureData().'|'.$signature;
         return $this;
     }
 

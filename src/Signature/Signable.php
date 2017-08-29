@@ -2,13 +2,8 @@
 
 namespace Webgriffe\LibTriveneto\Signature;
 
-interface Signable
+interface Signable extends ComputableSignature
 {
-    /**
-     * @return string
-     */
-    public function getSignatureData();
-
     /**
      * @param $signature
      * @return $this

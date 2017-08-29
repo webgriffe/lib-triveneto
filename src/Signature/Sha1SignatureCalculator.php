@@ -2,10 +2,14 @@
 
 namespace Webgriffe\LibTriveneto\Signature;
 
-class Sha1SignatureCalculator implements Signer
+class Sha1SignatureCalculator extends SignatureCalculator
 {
-    public function sign(Signable $signable)
+    /**
+     * @param ComputableSignature $signable
+     * @return string
+     */
+    protected function computeSignature(ComputableSignature $signable)
     {
-        $signable->setSignature(sha1($signable->getSignatureData()));
+        return sha1($signable->getSignatureData() . $this->signSecret);
     }
 }
