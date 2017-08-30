@@ -197,6 +197,84 @@ class ClientSpec extends ObjectBehavior
         );
     }
 
+    public function it_throws_exception_if_signature_is_invalid(LoggerInterface $logger, RequestSender $sender)
+    {
+        $this->constructAndInit($logger, $sender);
+
+        $this->shouldThrow(new \Exception('Signature is invalid'))->duringPaymentVerify(
+            [
+                'paymentid' => '123',
+                'tranid'    => '456',
+                'result'    => 'APPROVED',
+                'auth'      => '123456',
+                'postdate'  => '0829',
+                'trackid'   => '100001',
+                'ref'       => '0987654321',
+                'udf1'      => 'apwd1100.00978ITA100001|40c7de6cad5c34abd935761832ebbbd9c735b40a',
+            ]
+        );
+    }
+
+    public function it_returns_false_on_a_failure_notification(LoggerInterface $logger, RequestSender $sender)
+    {
+        $this->constructAndInit($logger, $sender);
+
+        $this->paymentVerify(
+            [
+                'paymentid' => '123',
+                'tranid'    => '456',
+                'result'    => 'NOT APPROVED',
+                'auth'      => '123456',
+                'postdate'  => '0829',
+                'trackid'   => '100001',
+                'ref'       => '0987654321',
+                'udf1'      => 'apwd1100.00978ITA100001|40c7de6cad5c34abd935761832ebbbd9c735b40b',
+                'payinst'   => 'CC',
+                'ipcountry' => '127.0.0.1',
+            ]
+        )->getIsSuccess()->shouldBe(false);
+    }
+
+    public function it_returns_true_on_an_approved_notification(LoggerInterface $logger, RequestSender $sender)
+    {
+        $this->constructAndInit($logger, $sender);
+
+        $this->paymentVerify(
+            [
+                'paymentid' => '123',
+                'tranid'    => '456',
+                'result'    => 'APPROVED',
+                'auth'      => '123456',
+                'postdate'  => '0829',
+                'trackid'   => '100001',
+                'ref'       => '0987654321',
+                'udf1'      => 'apwd1100.00978ITA100001|40c7de6cad5c34abd935761832ebbbd9c735b40b',
+                'payinst'   => 'CC',
+                'ipcountry' => '127.0.0.1',
+            ]
+        )->getIsSuccess()->shouldBe(true);
+    }
+
+    public function it_returns_true_on_a_captured_notification(LoggerInterface $logger, RequestSender $sender)
+    {
+        $this->constructAndInit($logger, $sender);
+
+        $this->paymentVerify(
+            [
+                'paymentid' => '123',
+                'tranid'    => '456',
+                'result'    => 'CAPTURED',
+                'auth'      => '123456',
+                'postdate'  => '0829',
+                'trackid'   => '100001',
+                'ref'       => '0987654321',
+                'udf1'      => 'apwd1100.00978ITA100001|40c7de6cad5c34abd935761832ebbbd9c735b40b',
+                'payinst'   => 'CC',
+                'ipcountry' => '127.0.0.1',
+            ]
+        )->getIsSuccess()->shouldBe(true);
+    }
+
     /**
      * @param LoggerInterface $logger
      * @param RequestSender $sender

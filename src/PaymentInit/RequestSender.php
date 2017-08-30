@@ -15,7 +15,7 @@ class RequestSender
         $ch = curl_init($url);
 
         //Set http headers
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         curl_setopt($ch, CURLOPT_POST, 1);
 
         //Set data
@@ -25,6 +25,10 @@ class RequestSender
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 
         //Go for it
-        return curl_exec($ch);
+        $result = curl_exec($ch);
+
+        curl_close($ch);
+
+        return $result;
     }
 }

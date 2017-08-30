@@ -6,9 +6,10 @@ use Psr\Log\LoggerInterface;
 use Webgriffe\LibTriveneto\Lists\Actions;
 use Webgriffe\LibTriveneto\Lists\Currencies;
 use Webgriffe\LibTriveneto\Lists\Languages;
-use Webgriffe\LibTriveneto\PaymentInit\Request;
+use Webgriffe\LibTriveneto\NotificationMessage\NotificationResult;
 use Webgriffe\LibTriveneto\PaymentInit\RequestSender;
 use Webgriffe\LibTriveneto\Signature\Sha1SignatureCalculator;
+use Webgriffe\LibTriveneto\Signature\SignatureChecker;
 use Webgriffe\LibTriveneto\Signature\Signer;
 
 class Client
@@ -132,7 +133,7 @@ class Client
             throw new \InvalidArgumentException('Missing error URL');
         }
 
-        $request = new Request();
+        $request = new PaymentInit\Request();
         $request->setId($this->userId);
         $request->setPassword($this->password);
         $request->setAction($this->action);
@@ -176,13 +177,29 @@ class Client
             throw new \Exception("{$errorCode}: {$errorDesc}");
         }
 
-        $paymentid = $requestParams['paymentid'];
-        $tranid = $requestParams['tranid'];
-        $result = $requestParams['result'];
-        $auth = $requestParams['auth'];
-        $postdate = $requestParams['postdate'];
-        $trackid = $requestParams['trackid'];
-        $udf1 = $requestParams['udf1'];
+        $request = new NotificationMessage\Request();
+        $request->initConfigurationData($this->userId, $this->password, $this->action);
+        $request->populateFromRequestData($requestParams);
+
+        $checker = $this->getSignatureChecker();
+        if (!$checker->checkSignature($request)) {
+            throw new \Exception('Signature is invalid');
+        }
+
+        return new NotificationResult(
+            $requestParams['paymentid'],
+            $requestParams['tranid'],
+            $requestParams['result'],
+            array_key_exists('auth', $requestParams) ? $requestParams['auth'] : null,
+            array_key_exists('postdate', $requestParams) ? $requestParams['postdate'] : null,
+            array_key_exists('ref', $requestParams) ? $requestParams['ref'] : null,
+            array_key_exists('responsecode', $requestParams) ? $requestParams['responsecode'] : null,
+            array_key_exists('cardtype', $requestParams) ? $requestParams['cardtype'] : null,
+            $requestParams['payinst'],
+            array_key_exists('liability', $requestParams) ? $requestParams['liability'] : null,
+            array_key_exists('cardcountry', $requestParams) ? $requestParams['cardcountry'] : null,
+            $requestParams['ipcountry']
+        );
     }
 
     private function wasInitCalled()
@@ -213,6 +230,14 @@ class Client
      * @return Signer
      */
     private function getSigner()
+    {
+        return new Sha1SignatureCalculator($this->signSecret);
+    }
+
+    /**
+     * @return SignatureChecker
+     */
+    private function getSignatureChecker()
     {
         return new Sha1SignatureCalculator($this->signSecret);
     }
