@@ -95,15 +95,21 @@ class Client
      * @param float $amount Payment amount
      * @param string $currencyCode Code that identifies the payment currency. Currently only 978 (Euro) is supported
      * @param string $languageId Code of the payment page language
-     * @param string $successUrl URL to redirect the customer to after a succesful payment
+     * @param string $notifyUrl URL that Triveneto will send the server to server message to
      * @param string $errorUrl URL to redirect the customer to after a failed payment
      *
      * @return string The URL to redirect the customer to in order to perform the payment
      *
      * @throws \Exception
      */
-    public function paymentInit($merchantTransactionId, $amount, $currencyCode, $languageId, $successUrl, $errorUrl)
-    {
+    public function paymentInit(
+        $merchantTransactionId,
+        $amount,
+        $currencyCode,
+        $languageId,
+        $notifyUrl,
+        $errorUrl
+    ) {
         if (!$this->wasInitCalled()) {
             throw new \Exception('Init was not called');
         }
@@ -125,8 +131,8 @@ class Client
             throw new \InvalidArgumentException('Invalid language');
         }
 
-        if (!$successUrl) {
-            throw new \InvalidArgumentException('Missing success URL');
+        if (!$notifyUrl) {
+            throw new \InvalidArgumentException('Missing notify URL');
         }
 
         if (!$errorUrl) {
@@ -140,7 +146,7 @@ class Client
         $request->setAmt($amount);
         $request->setCurrencycode($currencyCode);
         $request->setLangid($languageId);
-        $request->setResponseURL($successUrl);
+        $request->setNotifyUrl($notifyUrl);
         $request->setErrorUrl($errorUrl);
         $request->setTrackid($merchantTransactionId);
 
@@ -162,10 +168,18 @@ class Client
         return "{$paymentUrl}?PaymentID={$paymentId}";
     }
 
-    public function paymentVerify(array $requestParams)
+    public function paymentVerify(array $requestParams, $successUrl, $errorUrl)
     {
         if (!$this->wasInitCalled()) {
             throw new \Exception('Init was not called');
+        }
+
+        if (!$successUrl) {
+            throw new \InvalidArgumentException('Missing success url');
+        }
+
+        if (!$errorUrl) {
+            throw new \InvalidArgumentException('Missing error url');
         }
 
         array_change_key_case($requestParams, CASE_LOWER);
@@ -187,6 +201,8 @@ class Client
         }
 
         return new NotificationResult(
+            $successUrl,
+            $errorUrl,
             $requestParams['paymentid'],
             $requestParams['tranid'],
             $requestParams['result'],

@@ -126,9 +126,29 @@ class NotificationResultSpec extends ObjectBehavior
         $this->getIsPending()->shouldBe(false);
     }
 
+    public function it_generates_success_response_when_result_is_approved()
+    {
+        $this->beConstructedWithResult('APPROVED');
+        $this->generateResponse()->shouldBe('REDIRECT=http://success.com');
+    }
+
+    public function it_generates_success_response_when_result_is_pending()
+    {
+        $this->beConstructedWithResult('PENDING');
+        $this->generateResponse()->shouldBe('REDIRECT=http://success.com');
+    }
+
+    public function it_generates_error_response_when_result_is_not_approved()
+    {
+        $this->beConstructedWithResult('NOT APPROVED');
+        $this->generateResponse()->shouldBe('REDIRECT=http://error.com');
+    }
+
     private function beConstructedWithResult($result)
     {
         $this->beConstructedWith(
+            'http://success.com',
+            'http://error.com',
             '123',
             '456',
             $result,

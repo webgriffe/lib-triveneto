@@ -13,6 +13,16 @@ class NotificationResult
     /**
      * @var string
      */
+    private $successUrl;
+
+    /**
+     * @var string
+     */
+    private $errorUrl;
+
+    /**
+     * @var string
+     */
     private $paymentId;
 
     /**
@@ -71,6 +81,8 @@ class NotificationResult
     private $ipCountry;
 
     public function __construct(
+        $successUrl,
+        $errorUrl,
         $paymentId,
         $ipgTransactionId,
         $result,
@@ -84,6 +96,9 @@ class NotificationResult
         $cardCountry,
         $ipCountry
     ) {
+        $this->successUrl = $successUrl;
+        $this->errorUrl = $errorUrl;
+
         $this->paymentId = $paymentId;
         $this->ipgTransactionId = $ipgTransactionId;
         $this->result = $result;
@@ -112,6 +127,19 @@ class NotificationResult
     public function getIsPending()
     {
         return strcasecmp($this->result, 'PENDING') === 0;
+    }
+
+    /**
+     * @return string
+     */
+    public function generateResponse()
+    {
+        $url = $this->errorUrl;
+        if ($this->getIsSuccess() || $this->getIsPending()) {
+            $url = $this->successUrl;
+        }
+
+        return "REDIRECT={$url}";
     }
 
     /**

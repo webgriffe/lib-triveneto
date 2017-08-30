@@ -24,7 +24,7 @@ class RequestSpec extends ObjectBehavior
         $this->setAmt(100);
         $this->setCurrencycode(978);
         $this->setLangid('ITA');
-        $this->setResponseURL('http://response.com');
+        $this->setNotifyURL('http://notify.com');
         $this->setErrorUrl('http://error.com');
         $this->setTrackid('100001');
 
@@ -39,7 +39,7 @@ class RequestSpec extends ObjectBehavior
         $this->setAmt(100);
         $this->setCurrencycode(978);
         //$this->setLangid('ITA');
-        $this->setResponseURL('http://response.com');
+        $this->setNotifyURL('http://notify.com');
         $this->setErrorUrl('http://error.com');
         $this->setTrackid('100001');
 
@@ -54,7 +54,7 @@ class RequestSpec extends ObjectBehavior
         $this->setAmt(100);
         $this->setCurrencycode(978);
         $this->setLangid('ITA');
-        $this->setResponseURL('http://response.com');
+        $this->setNotifyURL('http://notify.com');
         $this->setErrorUrl('http://error.com');
         $this->setTrackid('100001');
 
@@ -69,7 +69,7 @@ class RequestSpec extends ObjectBehavior
         $this->setAmt(100);
         $this->setCurrencycode(978);
         //$this->setLangid('ITA');
-        $this->setResponseURL('http://response.com');
+        $this->setNotifyURL('http://notify.com');
         $this->setErrorUrl('http://error.com');
         $this->setTrackid('100001');
 
@@ -84,7 +84,7 @@ class RequestSpec extends ObjectBehavior
         $this->setAmt(100);
         $this->setCurrencycode(978);
         $this->setLangid('ITA');
-        $this->setResponseURL('http://response.com');
+        $this->setNotifyURL('http://notify.com');
         $this->setErrorUrl('http://error.com');
         $this->setTrackid('100001');
 
@@ -99,14 +99,14 @@ class RequestSpec extends ObjectBehavior
         $this->setAmt(100);
         $this->setCurrencycode(978);
         $this->setLangid('ITA');
-        $this->setResponseURL('http://response.com');
+        $this->setNotifyURL('http://notify.com');
         $this->setErrorUrl('http://error.com');
         $this->setTrackid('100001');
 
         $this->setSignature('signature');
 
         $this->generateQueryString()->shouldBe(
-            'id=1&password=pwd&action=1&amt=100.00&currencycode=978&langid=ITA&responseURL=http%3A%2F%2Fresponse.com&'.
+            'id=1&password=pwd&action=1&amt=100.00&currencycode=978&langid=ITA&responseURL=http%3A%2F%2Fnotify.com&'.
             'errorURL=http%3A%2F%2Ferror.com&trackid=100001&udf1=1pwd1100.00978ITA100001%7Csignature'
         );
     }
@@ -119,7 +119,7 @@ class RequestSpec extends ObjectBehavior
         $this->setAmt(100);
         $this->setCurrencycode(978);
         $this->setLangid('ITA');
-        $this->setResponseURL('http://response.com');
+        $this->setNotifyURL('http://notify.com');
         $this->setErrorUrl('http://error.com');
         $this->setTrackid('100001');
 

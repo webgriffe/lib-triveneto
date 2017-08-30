@@ -64,83 +64,83 @@ class ClientSpec extends ObjectBehavior
     {
         $this->beConstructedWith($logger, $sender);
         $this->shouldThrow(new \Exception("Init was not called"))
-            ->duringPaymentInit('10001', 100, 978, 'ITA', 'http://response.com', 'http://error.com');
+            ->duringPaymentInit('10001', 100, 978, 'ITA', 'http://notify.com', 'http://error.com');
     }
 
     public function it_throws_exception_if_transaction_id_is_missing(LoggerInterface $logger, RequestSender $sender)
     {
         $this->constructAndInit($logger, $sender);
         $this->shouldThrow(new \InvalidArgumentException('No transaction id provided'))
-            ->duringPaymentInit('', 100, 978, 'ITA', 'http://response.com', 'http://error.com');
+            ->duringPaymentInit('', 100, 978, 'ITA', 'http://notify.com', 'http://error.com');
     }
 
     public function it_throws_exception_if_amount_is_missing(LoggerInterface $logger, RequestSender $sender)
     {
         $this->constructAndInit($logger, $sender);
         $this->shouldThrow(new \InvalidArgumentException('Invalid amount'))
-            ->duringPaymentInit('100001', '', 978, 'ITA', 'http://response.com', 'http://error.com');
+            ->duringPaymentInit('100001', '', 978, 'ITA', 'http://notify.com', 'http://error.com');
     }
 
     public function it_throws_exception_if_amount_is_non_numeric(LoggerInterface $logger, RequestSender $sender)
     {
         $this->constructAndInit($logger, $sender);
         $this->shouldThrow(new \InvalidArgumentException('Invalid amount'))
-            ->duringPaymentInit('100001', 'a', 978, 'ITA', 'http://response.com', 'http://error.com');
+            ->duringPaymentInit('100001', 'a', 978, 'ITA', 'http://notify.com', 'http://error.com');
     }
 
     public function it_throws_exception_if_amount_is_negative(LoggerInterface $logger, RequestSender $sender)
     {
         $this->constructAndInit($logger, $sender);
         $this->shouldThrow(new \InvalidArgumentException('Invalid amount'))
-            ->duringPaymentInit('100001', -10, 978, 'ITA', 'http://response.com', 'http://error.com');
+            ->duringPaymentInit('100001', -10, 978, 'ITA', 'http://notify.com', 'http://error.com');
     }
 
     public function it_throws_exception_if_amount_is_zero(LoggerInterface $logger, RequestSender $sender)
     {
         $this->constructAndInit($logger, $sender);
         $this->shouldThrow(new \InvalidArgumentException('Invalid amount'))
-            ->duringPaymentInit('100001', 0, 978, 'ITA', 'http://response.com', 'http://error.com');
+            ->duringPaymentInit('100001', 0, 978, 'ITA', 'http://notify.com', 'http://error.com');
     }
 
     public function it_throws_exception_if_amount_has_more_than_2_decimal_places(LoggerInterface $logger, RequestSender $sender)
     {
         $this->constructAndInit($logger, $sender);
         $this->shouldThrow(new \InvalidArgumentException('Invalid amount'))
-            ->duringPaymentInit('100001', 10.123, 978, 'ITA', 'http://response.com', 'http://error.com');
+            ->duringPaymentInit('100001', 10.123, 978, 'ITA', 'http://notify.com', 'http://error.com');
     }
 
     public function it_throws_exception_if_currency_is_missing(LoggerInterface $logger, RequestSender $sender)
     {
         $this->constructAndInit($logger, $sender);
         $this->shouldThrow(new \InvalidArgumentException('Invalid currency'))
-            ->duringPaymentInit('100001', 100, '', 'ITA', 'http://response.com', 'http://error.com');
+            ->duringPaymentInit('100001', 100, '', 'ITA', 'http://notify.com', 'http://error.com');
     }
 
     public function it_throws_exception_if_currency_is_invalid(LoggerInterface $logger, RequestSender $sender)
     {
         $this->constructAndInit($logger, $sender);
         $this->shouldThrow(new \InvalidArgumentException('Invalid currency'))
-            ->duringPaymentInit('100001', 100, '', 'ITA', 'http://response.com', 'http://error.com');
+            ->duringPaymentInit('100001', 100, '', 'ITA', 'http://notify.com', 'http://error.com');
     }
 
     public function it_throws_exception_if_language_is_missing(LoggerInterface $logger, RequestSender $sender)
     {
         $this->constructAndInit($logger, $sender);
         $this->shouldThrow(new \InvalidArgumentException('Invalid language'))
-            ->duringPaymentInit('100001', 100, 978, '', 'http://response.com', 'http://error.com');
+            ->duringPaymentInit('100001', 100, 978, '', 'http://notify.com', 'http://error.com');
     }
 
     public function it_throws_exception_if_language_is_invalid(LoggerInterface $logger, RequestSender $sender)
     {
         $this->constructAndInit($logger, $sender);
         $this->shouldThrow(new \InvalidArgumentException('Invalid language'))
-            ->duringPaymentInit('100001', 100, 978, 'ABC', 'http://response.com', 'http://error.com');
+            ->duringPaymentInit('100001', 100, 978, 'ABC', 'http://notify.com', 'http://error.com');
     }
 
-    public function it_throws_exception_if_success_url_is_missing(LoggerInterface $logger, RequestSender $sender)
+    public function it_throws_exception_if_notify_url_is_missing(LoggerInterface $logger, RequestSender $sender)
     {
         $this->constructAndInit($logger, $sender);
-        $this->shouldThrow(new \InvalidArgumentException('Missing success URL'))
+        $this->shouldThrow(new \InvalidArgumentException('Missing notify URL'))
             ->duringPaymentInit('100001', 100, 978, 'ITA', '', 'http://error.com');
     }
 
@@ -148,36 +148,36 @@ class ClientSpec extends ObjectBehavior
     {
         $this->constructAndInit($logger, $sender);
         $this->shouldThrow(new \InvalidArgumentException('Missing error URL'))
-            ->duringPaymentInit('100001', 100, 978, 'ITA', 'http://response.com', '');
+            ->duringPaymentInit('100001', 100, 978, 'ITA', 'http://notify.com', '');
     }
 
     public function it_does_not_block_sender_exceptions(LoggerInterface $logger, RequestSender $sender)
     {
-        $queryString = 'id=a&password=pwd&action=1&amt=100.00&currencycode=978&langid=ITA&responseURL=http%3A%2F%2Fresponse.com&errorURL=http%3A%2F%2Ferror.com&trackid=100001&udf1=apwd1100.00978ITA100001%7C40c7de6cad5c34abd935761832ebbbd9c735b40b';
+        $queryString = 'id=a&password=pwd&action=1&amt=100.00&currencycode=978&langid=ITA&responseURL=http%3A%2F%2Fnotify.com&errorURL=http%3A%2F%2Ferror.com&trackid=100001&udf1=apwd1100.00978ITA100001%7C40c7de6cad5c34abd935761832ebbbd9c735b40b';
         $sender->post('url', $queryString)->willThrow(new \Exception('Test error'));
 
         $this->constructAndInit($logger, $sender);
         $this->shouldThrow(new \Exception('Test error'))
-            ->duringPaymentInit('100001', 100, 978, 'ITA', 'http://response.com', 'http://error.com');
+            ->duringPaymentInit('100001', 100, 978, 'ITA', 'http://notify.com', 'http://error.com');
     }
 
     public function it_throws_exception_when_gateway_reports_an_error(LoggerInterface $logger, RequestSender $sender)
     {
-        $queryString = 'id=a&password=pwd&action=1&amt=100.00&currencycode=978&langid=ITA&responseURL=http%3A%2F%2Fresponse.com&errorURL=http%3A%2F%2Ferror.com&trackid=100001&udf1=apwd1100.00978ITA100001%7C40c7de6cad5c34abd935761832ebbbd9c735b40b';
+        $queryString = 'id=a&password=pwd&action=1&amt=100.00&currencycode=978&langid=ITA&responseURL=http%3A%2F%2Fnotify.com&errorURL=http%3A%2F%2Ferror.com&trackid=100001&udf1=apwd1100.00978ITA100001%7C40c7de6cad5c34abd935761832ebbbd9c735b40b';
         $sender->post('url', $queryString)->willReturn('!ERROR!PY10000 Internal error');
 
         $this->constructAndInit($logger, $sender);
         $this->shouldThrow(new \Exception('PY10000 Internal error'))
-            ->duringPaymentInit('100001', 100, 978, 'ITA', 'http://response.com', 'http://error.com');
+            ->duringPaymentInit('100001', 100, 978, 'ITA', 'http://notify.com', 'http://error.com');
     }
 
     public function it_generates_signs_and_sends_paymentinit_message(LoggerInterface $logger, RequestSender $sender)
     {
-        $queryString = 'id=a&password=pwd&action=1&amt=100.00&currencycode=978&langid=ITA&responseURL=http%3A%2F%2Fresponse.com&errorURL=http%3A%2F%2Ferror.com&trackid=100001&udf1=apwd1100.00978ITA100001%7C40c7de6cad5c34abd935761832ebbbd9c735b40b';
+        $queryString = 'id=a&password=pwd&action=1&amt=100.00&currencycode=978&langid=ITA&responseURL=http%3A%2F%2Fnotify.com&errorURL=http%3A%2F%2Ferror.com&trackid=100001&udf1=apwd1100.00978ITA100001%7C40c7de6cad5c34abd935761832ebbbd9c735b40b';
         $sender->post('url', $queryString)->willReturn('123456:http://redirect.com');
 
         $this->constructAndInit($logger, $sender);
-        $this->paymentInit('100001', 100, 978, 'ITA', 'http://response.com', 'http://error.com')->shouldBe('http://redirect.com?PaymentID=123456');
+        $this->paymentInit('100001', 100, 978, 'ITA', 'http://notify.com', 'http://error.com')->shouldBe('http://redirect.com?PaymentID=123456');
     }
 
     public function it_throws_exception_if_init_was_not_called_before_calling_paymentverify(LoggerInterface $logger, RequestSender $sender)
@@ -193,7 +193,55 @@ class ClientSpec extends ObjectBehavior
                 'trackid' => '100001',
                 'ref' => '0987654321',
                 'udf1' => '',
-            ]
+                'payinst'   => 'CC',
+                'ipcountry' => 'IT',
+            ],
+            'http://success.com',
+            'http://error.com'
+        );
+    }
+
+    public function it_throws_exception_if_success_url_is_missing(LoggerInterface $logger, RequestSender $sender)
+    {
+        $this->constructAndInit($logger, $sender);
+
+        $this->shouldThrow(new \InvalidArgumentException('Missing success url'))->duringPaymentVerify(
+            [
+                'paymentid' => '123',
+                'tranid'    => '456',
+                'result'    => 'APPROVED',
+                'auth'      => '123456',
+                'postdate'  => '0829',
+                'trackid'   => '100001',
+                'ref'       => '0987654321',
+                'udf1'      => 'apwd1100.00978ITA100001|40c7de6cad5c34abd935761832ebbbd9c735b40b',
+                'payinst'   => 'CC',
+                'ipcountry' => 'IT',
+            ],
+            '',
+            'http://error.com'
+        );
+    }
+
+    public function it_throws_exception_if_error_url_is_missing_during_verify(LoggerInterface $logger, RequestSender $sender)
+    {
+        $this->constructAndInit($logger, $sender);
+
+        $this->shouldThrow(new \InvalidArgumentException('Missing error url'))->duringPaymentVerify(
+            [
+                'paymentid' => '123',
+                'tranid'    => '456',
+                'result'    => 'APPROVED',
+                'auth'      => '123456',
+                'postdate'  => '0829',
+                'trackid'   => '100001',
+                'ref'       => '0987654321',
+                'udf1'      => 'apwd1100.00978ITA100001|40c7de6cad5c34abd935761832ebbbd9c735b40b',
+                'payinst'   => 'CC',
+                'ipcountry' => 'IT',
+            ],
+            'http://success.com',
+            ''
         );
     }
 
@@ -211,7 +259,11 @@ class ClientSpec extends ObjectBehavior
                 'trackid'   => '100001',
                 'ref'       => '0987654321',
                 'udf1'      => 'apwd1100.00978ITA100001|40c7de6cad5c34abd935761832ebbbd9c735b40a',
-            ]
+                'payinst'   => 'CC',
+                'ipcountry' => 'IT',
+            ],
+            'http://success.com',
+            'http://error.com'
         );
     }
 
@@ -231,7 +283,9 @@ class ClientSpec extends ObjectBehavior
                 'udf1'      => 'apwd1100.00978ITA100001|40c7de6cad5c34abd935761832ebbbd9c735b40b',
                 'payinst'   => 'CC',
                 'ipcountry' => 'IT',
-            ]
+            ],
+            'http://success.com',
+            'http://error.com'
         )->getIsSuccess()->shouldBe(false);
     }
 
@@ -251,7 +305,9 @@ class ClientSpec extends ObjectBehavior
                 'udf1'      => 'apwd1100.00978ITA100001|40c7de6cad5c34abd935761832ebbbd9c735b40b',
                 'payinst'   => 'CC',
                 'ipcountry' => 'IT',
-            ]
+            ],
+            'http://success.com',
+            'http://error.com'
         )->getIsSuccess()->shouldBe(true);
     }
 
@@ -271,7 +327,9 @@ class ClientSpec extends ObjectBehavior
                 'udf1'      => 'apwd1100.00978ITA100001|40c7de6cad5c34abd935761832ebbbd9c735b40b',
                 'payinst'   => 'CC',
                 'ipcountry' => 'IT',
-            ]
+            ],
+            'http://success.com',
+            'http://error.com'
         )->getIsSuccess()->shouldBe(true);
     }
 

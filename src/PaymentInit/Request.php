@@ -24,7 +24,7 @@ class Request implements Signable
     
     private $langid;
     
-    private $responseURL;
+    private $notifyUrl;
     
     private $errorUrl;
     
@@ -99,12 +99,12 @@ class Request implements Signable
     }
 
     /**
-     * @param mixed $responseURL
+     * @param mixed $notifyUrl
      * @return $this
      */
-    public function setResponseURL($responseURL)
+    public function setNotifyUrl($notifyUrl)
     {
-        $this->responseURL = $responseURL;
+        $this->notifyUrl = $notifyUrl;
         $this->udf1 = null;
         return $this;
     }
@@ -147,7 +147,7 @@ class Request implements Signable
             $this->amt.
             $this->currencycode.
             $this->langid.
-            //$this->responseURL.   These are too long to add them to the udf1 field
+            //$this->notifyURL.   These are too long to add them to the udf1 field
             //$this->errorUrl.
             $this->trackid;
     }
@@ -181,7 +181,7 @@ class Request implements Signable
             'amt'           => $this->amt,
             'currencycode'  => $this->currencycode,
             'langid'        => $this->langid,
-            'responseURL'   => $this->responseURL,
+            'responseURL'   => $this->notifyUrl,
             'errorURL'      => $this->errorUrl,
             'trackid'       => $this->trackid,
             'udf1'          => $this->udf1,
@@ -196,6 +196,6 @@ class Request implements Signable
     private function isAllDataSet()
     {
         return $this->id && $this->password && $this->action && $this->amt && $this->currencycode && $this->langid &&
-            $this->responseURL && $this->errorUrl && $this->trackid;
+            $this->notifyUrl && $this->errorUrl && $this->trackid;
     }
 }
