@@ -3,7 +3,6 @@
 namespace spec\Webgriffe\LibTriveneto\NotificationMessage;
 
 use PhpSpec\ObjectBehavior;
-use Webgriffe\LibTriveneto\Signature\Sha1SignatureCalculator;
 
 class RequestSpec extends ObjectBehavior
 {

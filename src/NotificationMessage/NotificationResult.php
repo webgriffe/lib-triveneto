@@ -10,35 +10,71 @@ namespace Webgriffe\LibTriveneto\NotificationMessage;
 
 class NotificationResult
 {
+    /**
+     * @var string
+     */
     private $paymentId;
 
+    /**
+     * @var string
+     */
     private $ipgTransactionId;
 
+    /**
+     * @var string
+     */
     private $result;
 
-    private $suthCode;
+    /**
+     * @var string
+     */
+    private $authCode;
 
+    /**
+     * @var string
+     */
     private $paymentDate;
 
+    /**
+     * @var string
+     */
     private $transactionId;
 
+    /**
+     * @var string
+     */
     private $responseCode;
 
+    /**
+     * @var string
+     */
     private $cardType;
 
+    /**
+     * @var string
+     */
     private $paymentMethod;
 
+    /**
+     * @var string
+     */
     private $liability;
 
+    /**
+     * @var string
+     */
     private $cardCountry;
 
+    /**
+     * @var string
+     */
     private $ipCountry;
 
     public function __construct(
         $paymentId,
         $ipgTransactionId,
         $result,
-        $suthCode,
+        $authCode,
         $paymentDate,
         $transactionId,
         $responseCode,
@@ -51,7 +87,7 @@ class NotificationResult
         $this->paymentId = $paymentId;
         $this->ipgTransactionId = $ipgTransactionId;
         $this->result = $result;
-        $this->suthCode = $suthCode;
+        $this->authCode = $authCode;
         $this->paymentDate = $paymentDate;
         $this->transactionId = $transactionId;
         $this->responseCode = $responseCode;
@@ -62,18 +98,24 @@ class NotificationResult
         $this->ipCountry = $ipCountry;
     }
 
+    /**
+     * @return bool
+     */
     public function getIsSuccess()
     {
         return strcasecmp($this->result, 'APPROVED') === 0 || strcasecmp($this->result, 'CAPTURED') === 0;
     }
 
+    /**
+     * @return bool
+     */
     public function getIsPending()
     {
         return strcasecmp($this->result, 'PENDING') === 0;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getPaymentId()
     {
@@ -81,7 +123,7 @@ class NotificationResult
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getIpgTransactionId()
     {
@@ -89,7 +131,7 @@ class NotificationResult
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getResult()
     {
@@ -97,15 +139,15 @@ class NotificationResult
     }
 
     /**
-     * @return mixed
+     * @return string
      */
-    public function getSuthCode()
+    public function getAuthCode()
     {
-        return $this->suthCode;
+        return $this->authCode;
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getPaymentDate()
     {
@@ -113,7 +155,7 @@ class NotificationResult
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getTransactionId()
     {
@@ -121,7 +163,7 @@ class NotificationResult
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getResponseCode()
     {
@@ -129,7 +171,7 @@ class NotificationResult
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getCardType()
     {
@@ -137,7 +179,7 @@ class NotificationResult
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getPaymentMethod()
     {
@@ -145,7 +187,7 @@ class NotificationResult
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getLiability()
     {
@@ -153,7 +195,7 @@ class NotificationResult
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getCardCountry()
     {
@@ -161,7 +203,7 @@ class NotificationResult
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getIpCountry()
     {

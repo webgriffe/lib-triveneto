@@ -230,7 +230,7 @@ class ClientSpec extends ObjectBehavior
                 'ref'       => '0987654321',
                 'udf1'      => 'apwd1100.00978ITA100001|40c7de6cad5c34abd935761832ebbbd9c735b40b',
                 'payinst'   => 'CC',
-                'ipcountry' => '127.0.0.1',
+                'ipcountry' => 'IT',
             ]
         )->getIsSuccess()->shouldBe(false);
     }
@@ -250,7 +250,7 @@ class ClientSpec extends ObjectBehavior
                 'ref'       => '0987654321',
                 'udf1'      => 'apwd1100.00978ITA100001|40c7de6cad5c34abd935761832ebbbd9c735b40b',
                 'payinst'   => 'CC',
-                'ipcountry' => '127.0.0.1',
+                'ipcountry' => 'IT',
             ]
         )->getIsSuccess()->shouldBe(true);
     }
@@ -270,7 +270,7 @@ class ClientSpec extends ObjectBehavior
                 'ref'       => '0987654321',
                 'udf1'      => 'apwd1100.00978ITA100001|40c7de6cad5c34abd935761832ebbbd9c735b40b',
                 'payinst'   => 'CC',
-                'ipcountry' => '127.0.0.1',
+                'ipcountry' => 'IT',
             ]
         )->getIsSuccess()->shouldBe(true);
     }
