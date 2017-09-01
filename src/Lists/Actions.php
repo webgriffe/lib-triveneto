@@ -15,9 +15,9 @@ class Actions implements ValuesList
 
     public function getList()
     {
-        return array(
-            self::ACTION_PURCHASE,
-            self::ACTION_AUTHORIZATION,
-        );
+        return [
+            self::ACTION_PURCHASE => 'Purchase',
+            self::ACTION_AUTHORIZATION => 'Authorization',
+        ];
     }
 }

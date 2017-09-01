@@ -227,19 +227,19 @@ class Client
     private function isValidPaymentAction($action)
     {
         $actionsList = new Actions();
-        return in_array($action, $actionsList->getList());
+        return array_key_exists($action, $actionsList->getList());
     }
 
     private function isValidCurrencyCode($currencyCode)
     {
         $currencyList = new Currencies();
-        return in_array($currencyCode, $currencyList->getList());
+        return array_key_exists($currencyCode, $currencyList->getList());
     }
 
     private function isValidLanguageId($languageId)
     {
         $languagesList = new Languages();
-        return in_array($languageId, $languagesList->getList());
+        return array_key_exists($languageId, $languagesList->getList());
     }
 
     /**

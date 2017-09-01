@@ -22,16 +22,16 @@ class Languages implements ValuesList
 
     public function getList()
     {
-        return array(
-            self::ITA_LANGUAGE_CODE,
-            self::USA_LANGUAGE_CODE,
-            self::FRA_LANGUAGE_CODE,
-            self::DEU_LANGUAGE_CODE,
-            self::ESP_LANGUAGE_CODE,
-            self::SLO_LANGUAGE_CODE,
-            self::SRB_LANGUAGE_CODE,
-            self::POR_LANGUAGE_CODE,
-            self::RUS_LANGUAGE_CODE,
-        );
+        return [
+            self::ITA_LANGUAGE_CODE => 'Italian',
+            self::USA_LANGUAGE_CODE => 'English',
+            self::FRA_LANGUAGE_CODE => 'French',
+            self::DEU_LANGUAGE_CODE => 'German',
+            self::ESP_LANGUAGE_CODE => 'Spanish',
+            self::SLO_LANGUAGE_CODE => 'Slovene',
+            self::SRB_LANGUAGE_CODE => 'Serbian',
+            self::POR_LANGUAGE_CODE => 'Portuguese',
+            self::RUS_LANGUAGE_CODE => 'Russian',
+        ];
     }
 }

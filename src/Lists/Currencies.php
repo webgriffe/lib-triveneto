@@ -14,6 +14,6 @@ class Currencies implements ValuesList
 
     public function getList()
     {
-        return array(self::EUR_CURRENCY_CODE);
+        return [self::EUR_CURRENCY_CODE => 'Euro'];
     }
 }
