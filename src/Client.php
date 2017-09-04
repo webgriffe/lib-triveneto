@@ -8,6 +8,7 @@ use Webgriffe\LibTriveneto\Lists\Currencies;
 use Webgriffe\LibTriveneto\Lists\Languages;
 use Webgriffe\LibTriveneto\NotificationMessage\NotificationResult;
 use Webgriffe\LibTriveneto\PaymentInit\RequestSender;
+use Webgriffe\LibTriveneto\PaymentInit\Result;
 use Webgriffe\LibTriveneto\Signature\Sha1SignatureCalculator;
 use Webgriffe\LibTriveneto\Signature\SignatureChecker;
 use Webgriffe\LibTriveneto\Signature\Signer;
@@ -168,7 +169,7 @@ class Client
         $paymentId = substr($response, 0, $pos);
         $paymentUrl = substr($response, $pos + 1);
 
-        return "{$paymentUrl}?PaymentID={$paymentId}";
+        return new Result("{$paymentUrl}?PaymentID={$paymentId}", $paymentId);
     }
 
     /**

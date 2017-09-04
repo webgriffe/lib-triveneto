@@ -5,6 +5,7 @@ namespace spec\Webgriffe\LibTriveneto;
 use PhpSpec\ObjectBehavior;
 use Psr\Log\LoggerInterface;
 use Webgriffe\LibTriveneto\PaymentInit\RequestSender;
+use Webgriffe\LibTriveneto\PaymentInit\Result;
 
 class ClientSpec extends ObjectBehavior
 {
@@ -177,7 +178,10 @@ class ClientSpec extends ObjectBehavior
         $sender->post('url', $queryString)->willReturn('123456:http://redirect.com');
 
         $this->constructAndInit($logger, $sender);
-        $this->paymentInit('100001', 100, 978, 'ITA', 'http://notify.com', 'http://error.com')->shouldBe('http://redirect.com?PaymentID=123456');
+        /** @var Result $initResult */
+        $initResult = $this->paymentInit('100001', 100, 978, 'ITA', 'http://notify.com', 'http://error.com');
+        $initResult->getUrl()->shouldBe('http://redirect.com?PaymentID=123456');
+        $initResult->getPaymentId()->shouldBe('123456');
     }
 
     public function it_throws_exception_if_init_was_not_called_before_calling_paymentverify(LoggerInterface $logger, RequestSender $sender)
