@@ -34,4 +34,30 @@ class Languages implements ValuesList
             self::RUS_LANGUAGE_CODE => 'Russian',
         ];
     }
+
+    public function getValueMatchingLanguageCode($twoCharLanguageCode)
+    {
+        switch (strtolower($twoCharLanguageCode)) {
+            case 'it':
+                return self::ITA_LANGUAGE_CODE;
+            case 'en':
+                return self::USA_LANGUAGE_CODE;
+            case 'fr':
+                return self::FRA_LANGUAGE_CODE;
+            case 'de':
+                return self::DEU_LANGUAGE_CODE;
+            case 'es':
+                return self::ESP_LANGUAGE_CODE;
+            case 'sl':
+                return self::SLO_LANGUAGE_CODE;
+            case 'sr':
+                return self::SRB_LANGUAGE_CODE;
+            case 'pt':
+                return self::POR_LANGUAGE_CODE;
+            case 'ru':
+                return self::RUS_LANGUAGE_CODE;
+            default:
+                return self::USA_LANGUAGE_CODE;
+        }
+    }
 }
