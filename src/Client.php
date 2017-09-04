@@ -91,6 +91,9 @@ class Client
     }
 
     /**
+     * Performs the initial POST request to Triveneto to initialize the payment. If this request is succesful, then
+     * this method return the URL that the customer should be redirected to in order to perform the payment.
+     *
      * @param string $merchantTransactionId Identifier of the payment for the merchant. Usually this is the order id
      * @param float $amount Payment amount
      * @param string $currencyCode Code that identifies the payment currency. Currently only 978 (Euro) is supported
@@ -168,6 +171,15 @@ class Client
         return "{$paymentUrl}?PaymentID={$paymentId}";
     }
 
+    /**
+     * This method is used to process the payment verification request that Triveneto sends to the merchant's store.
+     *
+     * @param array $requestParams Notification request params that were sent by Triveneto
+     * @param string $successUrl Url to redirect the customer to if the verification succeeds
+     * @param string $errorUrl Url to redirect the customer to if the verification fails
+     * @return NotificationResult
+     * @throws \Exception
+     */
     public function paymentVerify(array $requestParams, $successUrl, $errorUrl)
     {
         if (!$this->wasInitCalled()) {
