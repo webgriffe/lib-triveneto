@@ -202,7 +202,7 @@ class Client
             $errorCode = $requestParams['error'];
             $errorDesc = $requestParams['errortext'];
 
-            throw new \Exception("{$errorCode}: {$errorDesc}");
+            throw new NotificationMessage\VerificationFailedException("{$errorCode}: {$errorDesc}");
         }
 
         $request = new NotificationMessage\Request();
