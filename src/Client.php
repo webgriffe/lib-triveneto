@@ -196,13 +196,14 @@ class Client
             throw new \InvalidArgumentException('Missing error url');
         }
 
-        array_change_key_case($requestParams, CASE_LOWER);
+        $requestParams = array_change_key_case($requestParams, CASE_LOWER);
 
         if (array_key_exists('error', $requestParams)) {
+            $paymentId = $requestParams['paymentid'];
             $errorCode = $requestParams['error'];
             $errorDesc = $requestParams['errortext'];
 
-            throw new NotificationMessage\VerificationFailedException("{$errorCode}: {$errorDesc}");
+            throw new NotificationMessage\VerificationFailedException($paymentId, $errorCode, $errorDesc);
         }
 
         $request = new NotificationMessage\Request();
@@ -222,6 +223,7 @@ class Client
             $requestParams['result'],
             array_key_exists('auth', $requestParams) ? $requestParams['auth'] : null,
             array_key_exists('postdate', $requestParams) ? $requestParams['postdate'] : null,
+            $requestParams['trackid'],
             array_key_exists('ref', $requestParams) ? $requestParams['ref'] : null,
             array_key_exists('responsecode', $requestParams) ? $requestParams['responsecode'] : null,
             array_key_exists('cardtype', $requestParams) ? $requestParams['cardtype'] : null,

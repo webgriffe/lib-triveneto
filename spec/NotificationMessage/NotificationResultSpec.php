@@ -154,6 +154,7 @@ class NotificationResultSpec extends ObjectBehavior
             $result,
             '123456',
             '0829',
+            '100001',
             '0987654321',
             '00',
             'VISA',

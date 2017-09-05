@@ -48,6 +48,11 @@ class NotificationResult
     /**
      * @var string
      */
+    private $merchantTransactionId;
+
+    /**
+     * @var string
+     */
     private $transactionId;
 
     /**
@@ -88,6 +93,7 @@ class NotificationResult
         $result,
         $authCode,
         $paymentDate,
+        $merchantTransactionId,
         $transactionId,
         $responseCode,
         $cardType,
@@ -104,6 +110,7 @@ class NotificationResult
         $this->result = $result;
         $this->authCode = $authCode;
         $this->paymentDate = $paymentDate;
+        $this->merchantTransactionId = $merchantTransactionId;
         $this->transactionId = $transactionId;
         $this->responseCode = $responseCode;
         $this->cardType = $cardType;
@@ -180,6 +187,14 @@ class NotificationResult
     public function getPaymentDate()
     {
         return $this->paymentDate;
+    }
+
+    /**
+     * @return string
+     */
+    public function getMerchantTransactionId()
+    {
+        return $this->merchantTransactionId;
     }
 
     /**

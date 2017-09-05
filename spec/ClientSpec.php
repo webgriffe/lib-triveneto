@@ -4,6 +4,7 @@ namespace spec\Webgriffe\LibTriveneto;
 
 use PhpSpec\ObjectBehavior;
 use Psr\Log\LoggerInterface;
+use Webgriffe\LibTriveneto\NotificationMessage\VerificationFailedException;
 use Webgriffe\LibTriveneto\PaymentInit\RequestSender;
 use Webgriffe\LibTriveneto\PaymentInit\Result;
 
@@ -335,6 +336,21 @@ class ClientSpec extends ObjectBehavior
             'http://success.com',
             'http://error.com'
         )->getIsSuccess()->shouldBe(true);
+    }
+
+    public function it_throws_verificationfailedexception_when_gateway_reports_an_error(LoggerInterface $logger, RequestSender $sender)
+    {
+        $this->constructAndInit($logger, $sender);
+
+        $this->shouldThrow(new VerificationFailedException('123', 'code', 'desc'))->duringPaymentVerify(
+            [
+                'paymentid' => '123',
+                'error'     => 'code',
+                'errorText' => 'desc',
+            ],
+            'http://success.com',
+            'http://error.com'
+        );
     }
 
     /**
