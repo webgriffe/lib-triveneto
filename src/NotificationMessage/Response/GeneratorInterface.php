@@ -11,5 +11,8 @@ namespace Webgriffe\LibTriveneto\NotificationMessage\Response;
 
 interface GeneratorInterface
 {
+    /**
+     * @return string
+     */
     public function generate();
 }

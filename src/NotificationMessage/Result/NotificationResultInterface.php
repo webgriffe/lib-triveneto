@@ -10,5 +10,8 @@ namespace Webgriffe\LibTriveneto\NotificationMessage\Result;
 
 interface NotificationResultInterface
 {
+    /**
+     * @return string
+     */
     public function getPaymentId();
 }
