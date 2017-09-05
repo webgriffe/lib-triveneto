@@ -6,20 +6,10 @@
  * Time: 14.24
  */
 
-namespace Webgriffe\LibTriveneto\NotificationMessage;
+namespace Webgriffe\LibTriveneto\NotificationMessage\Result;
 
-class NotificationResult
+class NotificationResult implements NotificationResultInterface
 {
-    /**
-     * @var string
-     */
-    private $successUrl;
-
-    /**
-     * @var string
-     */
-    private $errorUrl;
-
     /**
      * @var string
      */
@@ -86,8 +76,6 @@ class NotificationResult
     private $ipCountry;
 
     public function __construct(
-        $successUrl,
-        $errorUrl,
         $paymentId,
         $ipgTransactionId,
         $result,
@@ -102,9 +90,6 @@ class NotificationResult
         $cardCountry,
         $ipCountry
     ) {
-        $this->successUrl = $successUrl;
-        $this->errorUrl = $errorUrl;
-
         $this->paymentId = $paymentId;
         $this->ipgTransactionId = $ipgTransactionId;
         $this->result = $result;
@@ -134,19 +119,6 @@ class NotificationResult
     public function getIsPending()
     {
         return strcasecmp($this->result, 'PENDING') === 0;
-    }
-
-    /**
-     * @return string
-     */
-    public function generateResponse()
-    {
-        $url = $this->errorUrl;
-        if ($this->getIsSuccess() || $this->getIsPending()) {
-            $url = $this->successUrl;
-        }
-
-        return "REDIRECT={$url}";
     }
 
     /**

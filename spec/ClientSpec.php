@@ -4,6 +4,7 @@ namespace spec\Webgriffe\LibTriveneto;
 
 use PhpSpec\ObjectBehavior;
 use Psr\Log\LoggerInterface;
+use Webgriffe\LibTriveneto\NotificationMessage\Result\NotificationErrorResult;
 use Webgriffe\LibTriveneto\NotificationMessage\VerificationFailedException;
 use Webgriffe\LibTriveneto\PaymentInit\RequestSender;
 use Webgriffe\LibTriveneto\PaymentInit\Result;
@@ -200,53 +201,7 @@ class ClientSpec extends ObjectBehavior
                 'udf1' => '',
                 'payinst'   => 'CC',
                 'ipcountry' => 'IT',
-            ],
-            'http://success.com',
-            'http://error.com'
-        );
-    }
-
-    public function it_throws_exception_if_success_url_is_missing(LoggerInterface $logger, RequestSender $sender)
-    {
-        $this->constructAndInit($logger, $sender);
-
-        $this->shouldThrow(new \InvalidArgumentException('Missing success url'))->duringPaymentVerify(
-            [
-                'paymentid' => '123',
-                'tranid'    => '456',
-                'result'    => 'APPROVED',
-                'auth'      => '123456',
-                'postdate'  => '0829',
-                'trackid'   => '100001',
-                'ref'       => '0987654321',
-                'udf1'      => 'apwd1100.00978ITA100001|40c7de6cad5c34abd935761832ebbbd9c735b40b',
-                'payinst'   => 'CC',
-                'ipcountry' => 'IT',
-            ],
-            '',
-            'http://error.com'
-        );
-    }
-
-    public function it_throws_exception_if_error_url_is_missing_during_verify(LoggerInterface $logger, RequestSender $sender)
-    {
-        $this->constructAndInit($logger, $sender);
-
-        $this->shouldThrow(new \InvalidArgumentException('Missing error url'))->duringPaymentVerify(
-            [
-                'paymentid' => '123',
-                'tranid'    => '456',
-                'result'    => 'APPROVED',
-                'auth'      => '123456',
-                'postdate'  => '0829',
-                'trackid'   => '100001',
-                'ref'       => '0987654321',
-                'udf1'      => 'apwd1100.00978ITA100001|40c7de6cad5c34abd935761832ebbbd9c735b40b',
-                'payinst'   => 'CC',
-                'ipcountry' => 'IT',
-            ],
-            'http://success.com',
-            ''
+            ]
         );
     }
 
@@ -266,9 +221,7 @@ class ClientSpec extends ObjectBehavior
                 'udf1'      => 'apwd1100.00978ITA100001|40c7de6cad5c34abd935761832ebbbd9c735b40a',
                 'payinst'   => 'CC',
                 'ipcountry' => 'IT',
-            ],
-            'http://success.com',
-            'http://error.com'
+            ]
         );
     }
 
@@ -288,9 +241,7 @@ class ClientSpec extends ObjectBehavior
                 'udf1'      => 'apwd1100.00978ITA100001|40c7de6cad5c34abd935761832ebbbd9c735b40b',
                 'payinst'   => 'CC',
                 'ipcountry' => 'IT',
-            ],
-            'http://success.com',
-            'http://error.com'
+            ]
         )->getIsSuccess()->shouldBe(false);
     }
 
@@ -310,9 +261,7 @@ class ClientSpec extends ObjectBehavior
                 'udf1'      => 'apwd1100.00978ITA100001|40c7de6cad5c34abd935761832ebbbd9c735b40b',
                 'payinst'   => 'CC',
                 'ipcountry' => 'IT',
-            ],
-            'http://success.com',
-            'http://error.com'
+            ]
         )->getIsSuccess()->shouldBe(true);
     }
 
@@ -332,9 +281,7 @@ class ClientSpec extends ObjectBehavior
                 'udf1'      => 'apwd1100.00978ITA100001|40c7de6cad5c34abd935761832ebbbd9c735b40b',
                 'payinst'   => 'CC',
                 'ipcountry' => 'IT',
-            ],
-            'http://success.com',
-            'http://error.com'
+            ]
         )->getIsSuccess()->shouldBe(true);
     }
 
@@ -342,15 +289,18 @@ class ClientSpec extends ObjectBehavior
     {
         $this->constructAndInit($logger, $sender);
 
-        $this->shouldThrow(new VerificationFailedException('123', 'code', 'desc'))->duringPaymentVerify(
+        $result = $this->paymentVerify(
             [
                 'paymentid' => '123',
                 'error'     => 'code',
                 'errorText' => 'desc',
-            ],
-            'http://success.com',
-            'http://error.com'
+            ]
         );
+
+        $result->shouldBeAnInstanceOf(NotificationErrorResult::class);
+        $result->getPaymentId()->shouldBe('123');
+        $result->getErrorCode()->shouldBe('code');
+        $result->getErrorDescription()->shouldBe('desc');
     }
 
     /**

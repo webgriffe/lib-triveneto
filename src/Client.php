@@ -6,7 +6,9 @@ use Psr\Log\LoggerInterface;
 use Webgriffe\LibTriveneto\Lists\Actions;
 use Webgriffe\LibTriveneto\Lists\Currencies;
 use Webgriffe\LibTriveneto\Lists\Languages;
-use Webgriffe\LibTriveneto\NotificationMessage\NotificationResult;
+use Webgriffe\LibTriveneto\NotificationMessage\Result\NotificationResult;
+use Webgriffe\LibTriveneto\NotificationMessage\Result\NotificationErrorResult;
+use Webgriffe\LibTriveneto\NotificationMessage\Result\NotificationResultInterface;
 use Webgriffe\LibTriveneto\PaymentInit\RequestSender;
 use Webgriffe\LibTriveneto\PaymentInit\Result;
 use Webgriffe\LibTriveneto\Signature\Sha1SignatureCalculator;
@@ -177,23 +179,14 @@ class Client
      * This method is used to process the payment verification request that Triveneto sends to the merchant's store.
      *
      * @param array $requestParams Notification request params that were sent by Triveneto
-     * @param string $successUrl Url to redirect the customer to if the verification succeeds
-     * @param string $errorUrl Url to redirect the customer to if the verification fails
-     * @return NotificationResult
+     *
+     * @return NotificationResultInterface
      * @throws \Exception
      */
-    public function paymentVerify(array $requestParams, $successUrl, $errorUrl)
+    public function paymentVerify(array $requestParams)
     {
         if (!$this->wasInitCalled()) {
             throw new \Exception('Init was not called');
-        }
-
-        if (!$successUrl) {
-            throw new \InvalidArgumentException('Missing success url');
-        }
-
-        if (!$errorUrl) {
-            throw new \InvalidArgumentException('Missing error url');
         }
 
         $requestParams = array_change_key_case($requestParams, CASE_LOWER);
@@ -203,7 +196,7 @@ class Client
             $errorCode = $requestParams['error'];
             $errorDesc = $requestParams['errortext'];
 
-            throw new NotificationMessage\VerificationFailedException($paymentId, $errorCode, $errorDesc);
+            return new NotificationErrorResult($paymentId, $errorCode, $errorDesc);
         }
 
         $request = new NotificationMessage\Request();
@@ -216,8 +209,6 @@ class Client
         }
 
         return new NotificationResult(
-            $successUrl,
-            $errorUrl,
             $requestParams['paymentid'],
             $requestParams['tranid'],
             $requestParams['result'],
