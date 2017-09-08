@@ -158,7 +158,7 @@ class Request implements Signable
      */
     public function setSignature($signature)
     {
-        $this->udf1 = $this->getSignatureData().'|'.$signature;
+        $this->udf1 = $this->getSignatureData().'_'.$signature;
         return $this;
     }
 

@@ -156,7 +156,7 @@ class ClientSpec extends ObjectBehavior
 
     public function it_does_not_block_sender_exceptions(LoggerInterface $logger, RequestSender $sender)
     {
-        $queryString = 'id=a&password=pwd&action=1&amt=100.00&currencycode=978&langid=ITA&responseURL=http%3A%2F%2Fnotify.com&errorURL=http%3A%2F%2Ferror.com&trackid=100001&udf1=apwd1100.00978ITA100001%7C40c7de6cad5c34abd935761832ebbbd9c735b40b';
+        $queryString = 'id=a&password=pwd&action=1&amt=100.00&currencycode=978&langid=ITA&responseURL=http%3A%2F%2Fnotify.com&errorURL=http%3A%2F%2Ferror.com&trackid=100001&udf1=apwd1100.00978ITA100001_40c7de6cad5c34abd935761832ebbbd9c735b40b';
         $sender->post('url', $queryString)->willThrow(new \Exception('Test error'));
 
         $this->constructAndInit($logger, $sender);
@@ -166,7 +166,7 @@ class ClientSpec extends ObjectBehavior
 
     public function it_throws_exception_when_gateway_reports_an_error(LoggerInterface $logger, RequestSender $sender)
     {
-        $queryString = 'id=a&password=pwd&action=1&amt=100.00&currencycode=978&langid=ITA&responseURL=http%3A%2F%2Fnotify.com&errorURL=http%3A%2F%2Ferror.com&trackid=100001&udf1=apwd1100.00978ITA100001%7C40c7de6cad5c34abd935761832ebbbd9c735b40b';
+        $queryString = 'id=a&password=pwd&action=1&amt=100.00&currencycode=978&langid=ITA&responseURL=http%3A%2F%2Fnotify.com&errorURL=http%3A%2F%2Ferror.com&trackid=100001&udf1=apwd1100.00978ITA100001_40c7de6cad5c34abd935761832ebbbd9c735b40b';
         $sender->post('url', $queryString)->willReturn('!ERROR!PY10000 Internal error');
 
         $this->constructAndInit($logger, $sender);
@@ -176,7 +176,7 @@ class ClientSpec extends ObjectBehavior
 
     public function it_generates_signs_and_sends_paymentinit_message(LoggerInterface $logger, RequestSender $sender)
     {
-        $queryString = 'id=a&password=pwd&action=1&amt=100.00&currencycode=978&langid=ITA&responseURL=http%3A%2F%2Fnotify.com&errorURL=http%3A%2F%2Ferror.com&trackid=100001&udf1=apwd1100.00978ITA100001%7C40c7de6cad5c34abd935761832ebbbd9c735b40b';
+        $queryString = 'id=a&password=pwd&action=1&amt=100.00&currencycode=978&langid=ITA&responseURL=http%3A%2F%2Fnotify.com&errorURL=http%3A%2F%2Ferror.com&trackid=100001&udf1=apwd1100.00978ITA100001_40c7de6cad5c34abd935761832ebbbd9c735b40b';
         $sender->post('url', $queryString)->willReturn('123456:http://redirect.com');
 
         $this->constructAndInit($logger, $sender);
@@ -218,7 +218,7 @@ class ClientSpec extends ObjectBehavior
                 'postdate'  => '0829',
                 'trackid'   => '100001',
                 'ref'       => '0987654321',
-                'udf1'      => 'apwd1100.00978ITA100001|40c7de6cad5c34abd935761832ebbbd9c735b40a',
+                'udf1'      => 'apwd1100.00978ITA100001_40c7de6cad5c34abd935761832ebbbd9c735b40a',
                 'payinst'   => 'CC',
                 'ipcountry' => 'IT',
             ]
@@ -238,7 +238,7 @@ class ClientSpec extends ObjectBehavior
                 'postdate'  => '0829',
                 'trackid'   => '100001',
                 'ref'       => '0987654321',
-                'udf1'      => 'apwd1100.00978ITA100001|40c7de6cad5c34abd935761832ebbbd9c735b40b',
+                'udf1'      => 'apwd1100.00978ITA100001_40c7de6cad5c34abd935761832ebbbd9c735b40b',
                 'payinst'   => 'CC',
                 'ipcountry' => 'IT',
             ]
@@ -258,7 +258,7 @@ class ClientSpec extends ObjectBehavior
                 'postdate'  => '0829',
                 'trackid'   => '100001',
                 'ref'       => '0987654321',
-                'udf1'      => 'apwd1100.00978ITA100001|40c7de6cad5c34abd935761832ebbbd9c735b40b',
+                'udf1'      => 'apwd1100.00978ITA100001_40c7de6cad5c34abd935761832ebbbd9c735b40b',
                 'payinst'   => 'CC',
                 'ipcountry' => 'IT',
             ]
@@ -278,7 +278,7 @@ class ClientSpec extends ObjectBehavior
                 'postdate'  => '0829',
                 'trackid'   => '100001',
                 'ref'       => '0987654321',
-                'udf1'      => 'apwd1100.00978ITA100001|40c7de6cad5c34abd935761832ebbbd9c735b40b',
+                'udf1'      => 'apwd1100.00978ITA100001_40c7de6cad5c34abd935761832ebbbd9c735b40b',
                 'payinst'   => 'CC',
                 'ipcountry' => 'IT',
             ]

@@ -107,7 +107,7 @@ class RequestSpec extends ObjectBehavior
 
         $this->generateQueryString()->shouldBe(
             'id=1&password=pwd&action=1&amt=100.00&currencycode=978&langid=ITA&responseURL=http%3A%2F%2Fnotify.com&'.
-            'errorURL=http%3A%2F%2Ferror.com&trackid=100001&udf1=1pwd1100.00978ITA100001%7Csignature'
+            'errorURL=http%3A%2F%2Ferror.com&trackid=100001&udf1=1pwd1100.00978ITA100001_signature'
         );
     }
 

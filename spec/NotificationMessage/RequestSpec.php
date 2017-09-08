@@ -26,7 +26,7 @@ class RequestSpec extends ObjectBehavior
                 'auth'      => '123456',
                 //'postdate'  => '0829',
                 'trackid'   => '100001',
-                'udf1'      => '1pwd1100.00978ITA100001|bd7e588c91bf17480559382f56d00079fdfa50a1',
+                'udf1'      => '1pwd1100.00978ITA100001_bd7e588c91bf17480559382f56d00079fdfa50a1',
             ]
         );
 
@@ -51,7 +51,7 @@ class RequestSpec extends ObjectBehavior
                 'auth'      => '123456',
                 //'postdate'  => '0829',
                 'trackid'   => '100001',
-                'udf1'      => '1pwd1100.00978ITA100001|bd7e588c91bf17480559382f56d00079fdfa50a1',
+                'udf1'      => '1pwd1100.00978ITA100001_bd7e588c91bf17480559382f56d00079fdfa50a1',
             ]
         );
 
@@ -69,7 +69,7 @@ class RequestSpec extends ObjectBehavior
                 'auth'      => '123456',
                 //'postdate'  => '0829',
                 'trackid'   => '100001',
-                'udf1'      => '1pwd1100.00978ITA100001|bd7e588c91bf17480559382f56d00079fdfa50a1',
+                'udf1'      => '1pwd1100.00978ITA100001_bd7e588c91bf17480559382f56d00079fdfa50a1',
             ]
         );
 
@@ -87,7 +87,7 @@ class RequestSpec extends ObjectBehavior
                 'auth'      => '123456',
                 //'postdate'  => '0829',
                 'trackid'   => '100001',
-                'udf1'      => '1pwd1100.00978ITA100001|bd7e588c91bf17480559382f56d00079fdfa50a1',
+                'udf1'      => '1pwd1100.00978ITA100001_bd7e588c91bf17480559382f56d00079fdfa50a1',
             ]
         );
 

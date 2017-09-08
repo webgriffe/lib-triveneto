@@ -56,7 +56,7 @@ class Request implements CheckableSignature
             throw new \Exception('All values are required before checking signature');
         }
 
-        $receivedSignatureData = substr($this->udf1, 0, strrpos($this->udf1, '|'));
+        $receivedSignatureData = substr($this->udf1, 0, strrpos($this->udf1, '_'));
 
         //The brutal way
         $amtCurrencyLangString = substr(
@@ -74,7 +74,7 @@ class Request implements CheckableSignature
 
     public function getSignature()
     {
-        return substr($this->udf1, strrpos($this->udf1, '|') + 1);
+        return substr($this->udf1, strrpos($this->udf1, '_') + 1);
     }
 
     /**
