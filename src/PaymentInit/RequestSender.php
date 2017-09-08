@@ -27,6 +27,10 @@ class RequestSender
         //Go for it
         $result = curl_exec($ch);
 
+        if ($result === false) {
+            throw new \Exception('Error while trying to contact payment gateway: '.curl_error($ch));
+        }
+
         curl_close($ch);
 
         return $result;
