@@ -6,11 +6,18 @@
  * Time: 14.54
  */
 
-namespace Webgriffe\LibTriveneto\PaymentInit;
+namespace Webgriffe\LibTriveneto\PaymentInit\Sender;
 
-class RequestSender
+class RequestSender implements RequestSenderInterface
 {
-    public function post($url, $dataAsQueryString)
+    /**
+     * @param string $url
+     * @param string $dataAsQueryString
+     *
+     * @return string
+     * @throws \Exception
+     */
+    public function send($url, $dataAsQueryString)
     {
         $ch = curl_init($url);
 

@@ -3,13 +3,15 @@
 namespace Webgriffe\LibTriveneto;
 
 use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 use Webgriffe\LibTriveneto\Lists\Actions;
 use Webgriffe\LibTriveneto\Lists\Currencies;
 use Webgriffe\LibTriveneto\Lists\Languages;
 use Webgriffe\LibTriveneto\NotificationMessage\Result\NotificationResult;
 use Webgriffe\LibTriveneto\NotificationMessage\Result\NotificationErrorResult;
 use Webgriffe\LibTriveneto\NotificationMessage\Result\NotificationResultInterface;
-use Webgriffe\LibTriveneto\PaymentInit\RequestSender;
+use Webgriffe\LibTriveneto\PaymentInit\Sender\RequestSenderInterface;
+use Webgriffe\LibTriveneto\PaymentInit\Sender\RequestSender;
 use Webgriffe\LibTriveneto\PaymentInit\Result;
 use Webgriffe\LibTriveneto\Signature\Sha1SignatureCalculator;
 use Webgriffe\LibTriveneto\Signature\SignatureChecker;
@@ -23,7 +25,7 @@ class Client
     private $logger = null;
 
     /**
-     * @var RequestSender
+     * @var RequestSenderInterface
      */
     private $sender = null;
 
@@ -52,39 +54,50 @@ class Client
      */
     private $signSecret;
 
-    public function __construct(LoggerInterface $logger, RequestSender $sender)
+    public function __construct(RequestSenderInterface $sender, LoggerInterface $logger = null)
     {
-        $this->logger = $logger;
         $this->sender = $sender;
+        $this->logger = $logger;
     }
 
     public function init($userId, $password, $initUrl, $action, $signSecret)
     {
+        $this->log('Init was called');
+
         if (!extension_loaded('curl') || !function_exists('curl_init')) {
+            $this->log('This library needs PHP cURL to work', LogLevel::CRITICAL);
             throw new \Exception('This library needs PHP cURL to work');
         }
 
         if (!$userId) {
+            $this->log('User id is missing', LogLevel::CRITICAL);
             throw new \InvalidArgumentException('Missing user id');
         }
 
         if (!$password) {
+            $this->log('Password is missing', LogLevel::CRITICAL);
             throw new \InvalidArgumentException('Missing password');
         }
 
         if (!$initUrl) {
+            $this->log('Init URL is missing', LogLevel::CRITICAL);
             throw new \InvalidArgumentException('Missing payment init URL');
         }
 
         if (!$action) {
+            $this->log('Action is missing', LogLevel::CRITICAL);
             throw new \InvalidArgumentException('Missing payment action (accounting type)');
         } elseif (!$this->isValidPaymentAction($action)) {
+            $this->log(sprintf('Action %s is invalid', $action), LogLevel::CRITICAL);
             throw new \InvalidArgumentException('Invalid payment action specified: '.$action);
         }
 
         if (!$signSecret || strlen($signSecret) < 8) {
+            $this->log('Sign secret is missing', LogLevel::CRITICAL);
             throw new \InvalidArgumentException('Sign secret must be at least 8 chars long');
         }
+
+        $this->log('Init parameters seem fine');
 
         $this->userId = $userId;
         $this->password = $password;
@@ -117,34 +130,56 @@ class Client
         $notifyUrl,
         $errorUrl
     ) {
+        $this->log('paymentInit was called');
+
         if (!$this->wasInitCalled()) {
+            $this->log('PaymentInit called before calling init', LogLevel::CRITICAL);
             throw new \Exception('Init was not called');
         }
 
         if (!$merchantTransactionId) {
+            $this->log('Merchant transaction id is missing', LogLevel::CRITICAL);
             throw new \InvalidArgumentException('No transaction id provided');
         }
 
         //Only accept positive numbers with at most 2 decimal places
         if (!$amount || !is_numeric($amount) || $amount <= 0 || round($amount, 2) != $amount) {
+            $this->log('Missing or invalid payment amount', LogLevel::CRITICAL);
             throw new \InvalidArgumentException('Invalid amount');
         }
 
         if (!$currencyCode || !$this->isValidCurrencyCode($currencyCode)) {
+            $this->log('Missing or invalid currency code', LogLevel::CRITICAL);
             throw new \InvalidArgumentException('Invalid currency');
         }
 
         if (!$languageId || !$this->isValidLanguageId($languageId)) {
+            $this->log('Missing or invalid language code', LogLevel::CRITICAL);
             throw new \InvalidArgumentException('Invalid language');
         }
 
         if (!$notifyUrl) {
+            $this->log('Notify URL is missing', LogLevel::CRITICAL);
             throw new \InvalidArgumentException('Missing notify URL');
         }
 
         if (!$errorUrl) {
+            $this->log('Error URL is missing', LogLevel::CRITICAL);
             throw new \InvalidArgumentException('Missing error URL');
         }
+
+        $this->log(
+            sprintf(
+                "paymentInit parameters seem fine.\nParameters are:\nMerchant transaction id %s\nAmount: %s\n".
+                "Currency: %s\nLanguage: %s\nNotify URL: %s\nError URL: %s",
+                $merchantTransactionId,
+                $amount,
+                $currencyCode,
+                $languageId,
+                $notifyUrl,
+                $errorUrl
+            )
+        );
 
         $request = new PaymentInit\Request();
         $request->setId($this->userId);
@@ -157,22 +192,65 @@ class Client
         $request->setErrorUrl($errorUrl);
         $request->setTrackid($merchantTransactionId);
 
+        $this->log('PaymentInit request created. Ready for signature');
+
         $this->getSigner()->sign($request);
+
+        $this->log('Signature was succesfully computed and saved');
 
         $queryString = $request->generateQueryString();
 
-        $response = $this->sender->post($this->initUrl, $queryString);
+        $this->log(
+            sprintf(
+                'Generated query string for merchant transaction id %s: %s',
+                $merchantTransactionId,
+                $queryString
+            )
+        );
+
+        $this->log('Ready to perform post request...');
+        try {
+            $response = $this->sender->send($this->initUrl, $queryString);
+        } catch (\Exception $ex) {
+            $this->log(
+                sprintf(
+                    'Error while executing post request for merchant transaction %s: %s',
+                    $merchantTransactionId,
+                    $ex->getMessage()
+                ),
+                LogLevel::CRITICAL
+            );
+            throw $ex;
+        }
+
+        $this->log(
+            sprintf(
+                'Post request performed succesfully for merchant transaction %s. Result string: %s',
+                $merchantTransactionId,
+                $response
+            )
+        );
 
         if (strpos($response, '!ERROR!') === 0) {
+            $this->log('Error response detected', LogLevel::ERROR);
             $errorMessage = substr($response, 7);
+            $this->log('Error message: '.$errorMessage, LogLevel::ERROR);
             throw new \Exception($errorMessage);
         }
 
+        //Find the : separator in the response and split the string there. Since the second parameter si always an URL
+        //we also look for the beginning of this URL, hence the :http string
         $pos = strpos($response, ':http');
         $paymentId = substr($response, 0, $pos);
         $paymentUrl = substr($response, $pos + 1);
+        $this->log('PaymentId: '.$paymentId);
+        $this->log('PaymentUrl: '.$paymentUrl);
 
-        return new Result("{$paymentUrl}?PaymentID={$paymentId}", $paymentId);
+        $redirectUrl = "{$paymentUrl}?PaymentID={$paymentId}";
+        $this->log('Redirect URL: '.$redirectUrl);
+
+        $this->log('PaymentInit was completed succesfully :)');
+        return new Result($redirectUrl, $paymentId);
     }
 
     /**
@@ -185,29 +263,39 @@ class Client
      */
     public function paymentVerify(array $requestParams)
     {
+        $this->log('PaymentVerify was called');
+
         if (!$this->wasInitCalled()) {
+            $this->log('PaymentVerify called before calling init', LogLevel::CRITICAL);
             throw new \Exception('Init was not called');
         }
 
+        $this->log(sprintf('Request params: %s', print_r($requestParams, true)));
         $requestParams = array_change_key_case($requestParams, CASE_LOWER);
 
         if (array_key_exists('error', $requestParams)) {
+            $this->log('Error message detected', LogLevel::ERROR);
             $paymentId = $requestParams['paymentid'];
             $errorCode = $requestParams['error'];
             $errorDesc = $requestParams['errortext'];
 
+            $this->log(sprintf('Error for payment %s: %s %s', $paymentId, $errorCode, $errorDesc), LogLevel::ERROR);
             return new NotificationErrorResult($paymentId, $errorCode, $errorDesc);
         }
 
+        $this->log('The response seems to be a standard response type. Creating object to check signature');
         $request = new NotificationMessage\Request();
         $request->initConfigurationData($this->userId, $this->password, $this->action);
         $request->populateFromRequestData($requestParams);
 
+        $this->log('Ready to check signature for payment '.$requestParams['paymentid']);
         $checker = $this->getSignatureChecker();
         if (!$checker->checkSignature($request)) {
+            $this->log('Signature is invalid for payment '.$requestParams['paymentid']. LogLevel::ERROR);
             throw new \Exception('Signature is invalid');
         }
 
+        $this->log('Signature match for payment '.$requestParams['paymentid']);
         return new NotificationResult(
             $requestParams['paymentid'],
             $requestParams['tranid'],
@@ -254,7 +342,7 @@ class Client
      */
     private function getSigner()
     {
-        return new Sha1SignatureCalculator($this->signSecret);
+        return new Sha1SignatureCalculator($this->signSecret, $this->logger);
     }
 
     /**
@@ -262,6 +350,13 @@ class Client
      */
     private function getSignatureChecker()
     {
-        return new Sha1SignatureCalculator($this->signSecret);
+        return new Sha1SignatureCalculator($this->signSecret, $this->logger);
+    }
+
+    private function log($message, $level = LogLevel::DEBUG)
+    {
+        if ($this->logger) {
+            $this->logger->log($level, '[Lib Triveneto]: ' . $message);
+        }
     }
 }
