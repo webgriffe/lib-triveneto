@@ -156,6 +156,7 @@ class ClientSpec extends ObjectBehavior
     public function it_does_not_block_sender_exceptions(RequestSenderInterface $sender, LoggerInterface $logger)
     {
         $queryString = 'id=a&password=pwd&action=1&amt=100.00&currencycode=978&langid=ITA&responseURL=http%3A%2F%2Fnotify.com&errorURL=http%3A%2F%2Ferror.com&trackid=100001&udf1=apwd1100.00978ITA100001_40c7de6cad5c34abd935761832ebbbd9c735b40b';
+        $sender->validate()->willReturn(null);
         $sender->send('url', $queryString)->willThrow(new \Exception('Test error'));
 
         $this->constructAndInit($sender, $logger);
@@ -166,6 +167,7 @@ class ClientSpec extends ObjectBehavior
     public function it_throws_exception_when_gateway_reports_an_error(RequestSenderInterface $sender, LoggerInterface $logger)
     {
         $queryString = 'id=a&password=pwd&action=1&amt=100.00&currencycode=978&langid=ITA&responseURL=http%3A%2F%2Fnotify.com&errorURL=http%3A%2F%2Ferror.com&trackid=100001&udf1=apwd1100.00978ITA100001_40c7de6cad5c34abd935761832ebbbd9c735b40b';
+        $sender->validate()->willReturn(null);
         $sender->send('url', $queryString)->willReturn('!ERROR!PY10000 Internal error');
 
         $this->constructAndInit($sender, $logger);
@@ -176,6 +178,7 @@ class ClientSpec extends ObjectBehavior
     public function it_generates_signs_and_sends_paymentinit_message(RequestSenderInterface $sender, LoggerInterface $logger)
     {
         $queryString = 'id=a&password=pwd&action=1&amt=100.00&currencycode=978&langid=ITA&responseURL=http%3A%2F%2Fnotify.com&errorURL=http%3A%2F%2Ferror.com&trackid=100001&udf1=apwd1100.00978ITA100001_40c7de6cad5c34abd935761832ebbbd9c735b40b';
+        $sender->validate()->willReturn(null);
         $sender->send('url', $queryString)->willReturn('123456:http://redirect.com');
 
         $this->constructAndInit($sender, $logger);

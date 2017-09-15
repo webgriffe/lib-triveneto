@@ -8,8 +8,29 @@
 
 namespace Webgriffe\LibTriveneto\PaymentInit\Sender;
 
+use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
+
 class RequestSender implements RequestSenderInterface
 {
+    /**
+     * @var LoggerInterface
+     */
+    private $logger = null;
+
+    public function __construct(LoggerInterface $logger = null)
+    {
+        $this->logger = $logger;
+    }
+
+    public function validate()
+    {
+        if (!extension_loaded('curl') || !function_exists('curl_init')) {
+            $this->log('This library needs PHP cURL to work', LogLevel::CRITICAL);
+            throw new \Exception('This library needs PHP cURL to work');
+        }
+    }
+
     /**
      * @param string $url
      * @param string $dataAsQueryString
@@ -42,6 +63,13 @@ class RequestSender implements RequestSenderInterface
             return $result;
         } finally {
             curl_close($ch);
+        }
+    }
+
+    private function log($message, $level = LogLevel::DEBUG)
+    {
+        if ($this->logger) {
+            $this->logger->log($level, '[Lib Triveneto]: '.$message);
         }
     }
 }

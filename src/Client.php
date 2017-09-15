@@ -64,10 +64,7 @@ class Client
     {
         $this->log('Init was called');
 
-        if (!extension_loaded('curl') || !function_exists('curl_init')) {
-            $this->log('This library needs PHP cURL to work', LogLevel::CRITICAL);
-            throw new \Exception('This library needs PHP cURL to work');
-        }
+        $this->sender->validate();
 
         if (!$userId) {
             $this->log('User id is missing', LogLevel::CRITICAL);
