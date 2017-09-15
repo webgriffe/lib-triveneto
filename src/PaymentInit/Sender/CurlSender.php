@@ -11,7 +11,7 @@ namespace Webgriffe\LibTriveneto\PaymentInit\Sender;
 use Psr\Log\LoggerInterface;
 use Psr\Log\LogLevel;
 
-class RequestSender implements RequestSenderInterface
+class CurlSender implements RequestSenderInterface
 {
     /**
      * @var LoggerInterface
