@@ -10,8 +10,8 @@ use Webgriffe\LibTriveneto\Lists\Languages;
 use Webgriffe\LibTriveneto\NotificationMessage\Result\NotificationResult;
 use Webgriffe\LibTriveneto\NotificationMessage\Result\NotificationErrorResult;
 use Webgriffe\LibTriveneto\NotificationMessage\Result\NotificationResultInterface;
+use Webgriffe\LibTriveneto\PaymentInit\Sender\CurlSender;
 use Webgriffe\LibTriveneto\PaymentInit\Sender\RequestSenderInterface;
-use Webgriffe\LibTriveneto\PaymentInit\Sender\RequestSender;
 use Webgriffe\LibTriveneto\PaymentInit\Result;
 use Webgriffe\LibTriveneto\Signature\Sha1SignatureCalculator;
 use Webgriffe\LibTriveneto\Signature\SignatureChecker;
@@ -54,10 +54,10 @@ class Client
      */
     private $signSecret;
 
-    public function __construct(RequestSenderInterface $sender, LoggerInterface $logger = null)
+    public function __construct(LoggerInterface $logger = null, RequestSenderInterface $sender = null)
     {
-        $this->sender = $sender;
         $this->logger = $logger;
+        $this->sender = $sender ?: new CurlSender($logger);
     }
 
     public function init($userId, $password, $initUrl, $action, $signSecret)
