@@ -35,9 +35,9 @@ abstract class SignatureCalculator implements Signer, SignatureChecker
         //theoretically, replace the amount in the PaymentInit request and not touch the signature, and it would all
         //work. The only defense against this is SSL.
         //Even if Triveneto sent back all of the data it used to generate the payment (amount, currency code, language
-        //id etc.), as long as there is no signature check on Trivenetoìs side it remains possible to perform the attack
-        //described above. So this signature is there just to make it more difficult to fake the server to server
-        //message, not to make everything 100% secure.
+        //id etc.), as long as there is no signature check on Trivenetoìs side it remains possible to perform the
+        //attack described above. So this signature is there just to make it more difficult to fake the server to
+        //server message, not to make everything 100% secure.
         $signature = $this->computeSignature($signable);
         $this->log('Signing object. Computed signature: '.$signature);
         $signable->setSignature($signature);

@@ -8,7 +8,6 @@
 
 namespace Webgriffe\LibTriveneto\PaymentInit\Sender;
 
-
 interface RequestSenderInterface
 {
     /**

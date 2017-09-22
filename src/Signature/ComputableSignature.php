@@ -8,7 +8,6 @@
 
 namespace Webgriffe\LibTriveneto\Signature;
 
-
 interface ComputableSignature
 {
     /**

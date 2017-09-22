@@ -8,7 +8,6 @@
 
 namespace Webgriffe\LibTriveneto\NotificationMessage\Response;
 
-
 interface GeneratorInterface
 {
     /**
