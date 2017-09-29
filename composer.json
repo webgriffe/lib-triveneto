@@ -1,5 +1,6 @@
 {
     "name": "webgriffe/lib-triveneto",
+    "license": "MIT",
     "description": "Backend library for the Triveneto payment gateway",
     "license": "proprietary",
     "authors": [
